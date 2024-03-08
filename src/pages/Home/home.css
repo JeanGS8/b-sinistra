@@ -1,0 +1,20 @@
+.background-image-container {
+  background-image: url(../../../public/back.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 100vh;
+}
+
+.logo{
+  width: 300px;
+  margin: 100px 0 100px 100px;
+}
+
+.title {
+  position: absolute;
+  top: 50%;
+  left: 10%; /* Ajuste conforme necessário */
+  transform: translateY(-50%);
+  color: white; /* Altere a cor do texto conforme necessário */
+}
