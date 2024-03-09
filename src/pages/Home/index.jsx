@@ -1,7 +1,7 @@
-import { CardCarousel } from "../../components/cardCarousel";
 import { Helmet } from "react-helmet";
 import {Container, Row, Col} from "react-bootstrap";
 import "./home.css";
+import { CardCarousel } from "../../components/cardCarousel/index";
 
 export const Home = () => {
   return (
@@ -12,11 +12,12 @@ export const Home = () => {
 
       <Container fluid className="background-image-container">
         <Row className="left-bottom">
+          <Col sm={1}></Col>
           <Col>
-            <h1> <img src="/logo.jpg" alt="Logo broxada sinistra" className="logo" /> </h1>
+            <h1> <img src="/logo.png" alt="Logo broxada sinistra" className="logo" /> </h1>
           </Col>
         </Row>
-        <Row className="my-5">
+        <Row>
           <Col sm={12}>
             <CardCarousel />
           </Col>

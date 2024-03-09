@@ -4,22 +4,31 @@ import { useEffect, useState } from 'react';
 import { getVideos } from '../../services/service';
 import { CardVideo } from "../cardVideo/index";
 import {RiArrowDropLeftLine, RiArrowDropRightLine} from "react-icons/ri";
+import "./cardCarousel.css";
 
 export const CardCarousel = () => {
   const [videos, setVideos] = useState([]);
-  const [nextPageToken, setNextPageToken] = useState('');
+  const [resLargura, setResLargura] = useState(null);
 
   const fetchList = async () => {
     try{
-      const data = await getVideos(nextPageToken);
-      const filteredVideos = data.items.filter(item => !videos.find(video => video.id === item.id));
+      let maxResultados = 0;
+      let resultadoAtual = 0;
+      let nextPageToken = "";
 
-      setNextPageToken(data.nextPageToken || '');
-      
-      setVideos(prevVideos => [
-        ...prevVideos,
-        ...filteredVideos
-      ]);
+      do{
+        const data = await getVideos(nextPageToken);
+        maxResultados = await data.pageInfo.totalResults;
+        resultadoAtual += 50;
+        
+        nextPageToken = data.nextPageToken;
+        
+        setVideos(prevVideos => [
+          ...prevVideos,
+          ...data.items
+        ]);
+        
+      } while(resultadoAtual < maxResultados);
     }
     catch(error) {
       console.error(`Ocorreu um erro: ${error}`);
@@ -35,7 +44,7 @@ export const CardCarousel = () => {
     superLargeDesktop: {
       // the naming can be any, depends on you.
       breakpoint: { max: 4000, min: 3000 },
-      items: 5
+      items: 4
     },
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -52,56 +61,49 @@ export const CardCarousel = () => {
   };
 
   const CustomLeftArrow = ({ onClick }) => (
-    <RiArrowDropLeftLine
-      onClick={
-        () => {
-          console.log("esquerda");
-          console.log(videos);
-          setVideos(prevVideos => prevVideos.slice(0, -5));
-          onClick();
-        }
-      }
-      style={{position: "absolute", left: 0, top: "50%", zIndex: 100, color: "white"}}
-      size={50}
-      />
-      );
+    <RiArrowDropLeftLine onClick={onClick} className="arrow left-arrow" />
+  );
       
-      const CustomRightArrow = ({ onClick }) => (
-        <RiArrowDropRightLine
-        onClick={
-          async () => {
-            console.log("direita");
-            console.log(videos);
-          await fetchList();
-          onClick();
-        }
-      }
-      style={{position: "absolute", right: 0, top: "50%", zIndex: 100, color: "white"}}
-      size={50}
-    />
+  const CustomRightArrow = ({ onClick }) => (
+    <RiArrowDropRightLine onClick={onClick} className="arrow right-arrow" />
   );
 
-  return (      
+  useEffect(() => {
+    const handleResize = () => {
+      setResLargura(window.innerWidth < 1024 ? "mobile" : null);
+    };
+  
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  return (
       <Carousel
         customLeftArrow={<CustomLeftArrow />}
         
         customRightArrow={<CustomRightArrow />}
-
-        slidesToSlide={5}
-        swipeable={false}
+        
+        slidesToSlide={
+          resLargura == "mobile"? 1 : 4
+        }
+        swipeable={true}
         draggable={true}
         showDots={false}
         responsive={responsive}
         ssr={true} // means to render carousel on server-side.
         infinite={false}
-        autoPlaySpeed={1000}
+        autoPlay={
+          resLargura == "mobile"? true: false
+        }
+        autoPlaySpeed={300}
         keyBoardControl={true}
-        customTransition="all 1s"
-        transitionDuration={1000}
+        customTransition="transform 1500ms ease-in-out"
+        transitionDuration={1500}
         containerClass="carousel-container"
         removeArrowOnDeviceType={["tablet", "mobile"]}
-        dotListClass="custom-dot-list-style"
-        arrows
       >
         {videos.map(video => (
           <CardVideo src={video.snippet.thumbnails.medium.url} text={video.snippet.title} link={video.snippet.resourceId.videoId} key={video.id}/>
