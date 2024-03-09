@@ -98,7 +98,7 @@ export const CardCarousel = () => {
         autoPlay={
           resLargura == "mobile"? true: false
         }
-        autoPlaySpeed={300}
+        autoPlaySpeed={1500}
         keyBoardControl={true}
         customTransition="transform 1500ms ease-in-out"
         transitionDuration={1500}
